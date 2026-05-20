@@ -7,7 +7,8 @@ app.use(cors())
 app.use(express.json())
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = process.env.DB_URI;
 const client = new MongoClient(uri);
 
@@ -27,14 +28,20 @@ async function run() {
         })
         app.post("/tutor", async (req, res) => {
             const tutorData = req.body;
+            tutorData.slot = parseInt(tutorData.slot);
             // console.log(tutorData);
             const result = await tutors.insertOne(tutorData);
             res.json(result);
         })
-        
+
         app.get("/tutor/:id", async (req, res) => {
             const { id } = req.params;
             const result = await tutors.find({ user_id: id }).toArray();
+            // console.log(result)
+            res.json(result);
+        })
+        app.get("/tutor_home", async (req, res) => {
+            const result = await tutors.find().limit(6).toArray();
             // console.log(result)
             res.json(result);
         })
@@ -43,6 +50,18 @@ async function run() {
         const booking = db.collection("booking");
         app.post("/booking", async (req, res) => {
             const bookingData = req.body;
+
+            const tutorId = bookingData.tutor_id;
+            const tutor = await tutors.findOne({
+                _id: new ObjectId(tutorId)
+            });
+            if (tutor.slot <= 0) {
+                return res.status(400).json({ message: "No slots available" });
+            }
+            await tutors.updateOne(
+                { _id: new ObjectId(tutorId) },
+                { $inc: { slot: -1 } }
+            );
             const result = await booking.insertOne(bookingData);
             res.json(result);
         })
