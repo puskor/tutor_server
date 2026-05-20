@@ -25,13 +25,20 @@ async function run() {
             // console.log(result)
             res.json(result);
         })
-
         app.post("/tutor", async (req, res) => {
             const tutorData = req.body;
             // console.log(tutorData);
             const result = await tutors.insertOne(tutorData);
             res.json(result);
         })
+        
+        app.get("/tutor/:id", async (req, res) => {
+            const { id } = req.params;
+            const result = await tutors.find({ user_id: id }).toArray();
+            // console.log(result)
+            res.json(result);
+        })
+
 
         const booking = db.collection("booking");
         app.post("/booking", async (req, res) => {
@@ -45,7 +52,7 @@ async function run() {
         })
         app.get("/booking/:id", async (req, res) => {
             const { id } = req.params;
-            const result = await booking.find({user_id:id}).toArray();
+            const result = await booking.find({ user_id: id }).toArray();
             res.json(result);
         })
 
