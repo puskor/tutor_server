@@ -144,7 +144,7 @@ async function run() {
             res.json(result);
         })
 
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+        // console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
 
     }
