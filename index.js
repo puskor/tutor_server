@@ -27,7 +27,7 @@ const verifyToken =async (req, res, next) => {
 
     try {
         const { payload } = await jwtVerify(token, JWKS);
-        console.log(payload);
+        
         next();
     } catch (error) {
         return res.status(403).json({ message: "Forbidden" });
@@ -49,7 +49,7 @@ async function run() {
             // console.log(result)
             res.json(result);
         })
-        app.post("/tutor", async (req, res) => {
+        app.post("/tutor",verifyToken, async (req, res) => {
             const tutorData = req.body;
             tutorData.slot = parseInt(tutorData.slot);
             // console.log(tutorData);
@@ -57,7 +57,7 @@ async function run() {
             res.json(result);
         })
 
-        app.get("/tutor/:id", async (req, res) => {
+        app.get("/tutor/:id",verifyToken, async (req, res) => {
             const { id } = req.params;
             const result = await tutors.find({ user_id: id }).toArray();
             // console.log(result)
