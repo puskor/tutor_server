@@ -46,6 +46,29 @@ async function run() {
             res.json(result);
         })
 
+        app.delete("/tutor/:id", async (req, res) => {
+            const { id } = req.params;
+            // console.log(id)
+            const result = await tutors.deleteOne({
+                _id: new ObjectId(id)
+            });
+            res.json(result);
+        })
+
+        app.patch("/tutor/:id", async (req, res) => {
+            const { id } = req.params;
+            const updatedTutor = req.body;
+            const result = await tutors.updateOne({
+                _id: new ObjectId(id)
+            },
+                {
+                    $set: updatedTutor
+                });
+
+            res.json(result);
+
+        })
+
 
         const booking = db.collection("booking");
         app.post("/booking", async (req, res) => {
@@ -75,6 +98,20 @@ async function run() {
             res.json(result);
         })
 
+        app.delete("/booking/:id", async (req, res) => {
+            const { id } = req.params;
+            console.log(id);
+            const tutor = await booking.findOne({ _id: new ObjectId(id) });
+            const tutorId = tutor.tutor_id;
+            await tutors.updateOne(
+                { _id: new ObjectId(tutorId) },
+                { $inc: { slot: +1 } }
+            );
+            const result = await booking.deleteOne({
+                _id: new ObjectId(id)
+            });
+            res.json(result);
+        })
 
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
