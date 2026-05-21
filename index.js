@@ -72,13 +72,17 @@ async function run() {
 
         const booking = db.collection("booking");
         app.post("/booking", async (req, res) => {
+            // console.log("hello")
             const bookingData = req.body;
+            // console.log(bookingData)
 
             const tutorId = bookingData.tutor_id;
             const tutor = await tutors.findOne({
                 _id: new ObjectId(tutorId)
             });
-            if (tutor.slot <= 0) {
+
+            const slot = Number(tutor.slot)
+            if (slot <= 0) {
                 return res.status(400).json({ message: "No slots available" });
             }
             await tutors.updateOne(
@@ -88,6 +92,7 @@ async function run() {
             const result = await booking.insertOne(bookingData);
             res.json(result);
         })
+
         app.get("/booking", async (req, res) => {
             const result = await booking.find().toArray();
             res.json(result);
@@ -103,6 +108,7 @@ async function run() {
             console.log(id);
             const tutor = await booking.findOne({ _id: new ObjectId(id) });
             const tutorId = tutor.tutor_id;
+            const slot = Number(tutor.slot)
             await tutors.updateOne(
                 { _id: new ObjectId(tutorId) },
                 { $inc: { slot: +1 } }
