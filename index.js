@@ -105,13 +105,13 @@ async function run() {
                 _id: new ObjectId(tutorId)
             });
 
-            const slot = Number(tutor.slot)
-            if (slot <= 0) {
+            const currentSlot = Number(tutor.slot);
+            if (currentSlot <= 0) {
                 return res.status(400).json({ message: "No slots available" });
             }
             await tutors.updateOne(
                 { _id: new ObjectId(tutorId) },
-                { $inc: { slot: -1 } }
+                { $inc: { currentSlot: -1 } }
             );
             const result = await booking.insertOne(bookingData);
             res.json(result);
