@@ -17,6 +17,7 @@ const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks
 
 const verifyToken =async (req, res, next) => {
     const authHeader = req?.headers?.authentication;
+    // console.log(authHeader);
     if (!authHeader) {
         return res.status(401).json({ message: "Unauthorized" });
     }
@@ -27,9 +28,9 @@ const verifyToken =async (req, res, next) => {
 
     try {
         const { payload } = await jwtVerify(token, JWKS);
-        
         next();
     } catch (error) {
+        // console.log(error)
         return res.status(403).json({ message: "Forbidden" });
     }
 }
