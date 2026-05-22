@@ -131,13 +131,14 @@ async function run() {
 
         app.delete("/booking/:id", async (req, res) => {
             const { id } = req.params;
-            console.log(id);
+            // console.log(id);
             const tutor = await booking.findOne({ _id: new ObjectId(id) });
             const tutorId = tutor.tutor_id;
-            const slot = Number(tutor.slot)
+            // const slot = Number(tutor.slot)
+            const currentSlot = Number(tutor.slot);
             await tutors.updateOne(
                 { _id: new ObjectId(tutorId) },
-                { $inc: { slot: +1 } }
+                { $inc: { currentSlot: +1 } }
             );
             const result = await booking.deleteOne({
                 _id: new ObjectId(id)
